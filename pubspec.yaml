@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   intl: ^0.18.1
   cupertino_icons: ^1.0.8
   google_sign_in: ^6.2.2
@@ -22,9 +21,34 @@ dependencies:
   syncfusion_flutter_charts: ^20.4.48  
 
 dev_dependencies:
+  launcher_name: ^1.0.2
+  flutter_launcher_icons: ^0.14.3
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+
+# Launcher name configuration (must be at root level)
+launcher_name:
+  default: "DailyNest"
+
+# Flutter launcher icons configuration (must be at root level)
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/icons8-easter-eggs-100.png"
+  min_sdk_android: 21
+  web:
+    generate: true
+    image_path: "assets/images/icons8-easter-eggs-100.png"
+    background_color: "#FFFFFF" # Replace with actual color
+    theme_color: "#FFFFFF" # Replace with actual color
+  windows:
+    generate: true
+    image_path: "assets/images/icons8-easter-eggs-100.png"
+    icon_size: 48
+  macos:
+    generate: true
+    image_path: "assets/images/icons8-easter-eggs-100.png"
 
 flutter:
   uses-material-design: true

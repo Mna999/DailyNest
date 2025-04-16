@@ -59,6 +59,7 @@ class _StatespageState extends State<Statespage> {
           }
 
           sportsCount = workCount = studyCount = lifeCount = othersCount = 0;
+
           sportsStreak =
               workStreak = studyStreak = lifeStreak = othersStreak = 0;
 
