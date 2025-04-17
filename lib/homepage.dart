@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daily_nest/authentications/auth.dart';
 import 'package:daily_nest/authentications/login.dart';
+import 'package:daily_nest/confirm.dart';
 import 'package:daily_nest/favorites.dart';
 import 'package:daily_nest/habit/add.dart';
 import 'package:daily_nest/habit/collection.dart';
@@ -162,7 +163,14 @@ class _HomepageState extends State<Homepage> {
           ],
         ),
         leading: IconButton(
-          onPressed: _signOut,
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) => Confirm(
+                  message: "Are you sure you want to logout?",
+                  onConfirm: _signOut),
+            );
+          },
           icon: const Icon(
             Icons.exit_to_app,
             color: Colors.orange,
