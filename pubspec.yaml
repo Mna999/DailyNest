@@ -19,6 +19,7 @@ dependencies:
   firebase_auth: ^5.5.1
   font_awesome_flutter: ^10.7.0
   syncfusion_flutter_charts: ^20.4.48  
+  flutter_local_notifications: ^19.1.0
 
 dev_dependencies:
   launcher_name: ^1.0.2

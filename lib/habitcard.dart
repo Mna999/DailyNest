@@ -23,7 +23,6 @@ class _HabitCardState extends State<HabitCard> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.of(context).size;
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('habits')
@@ -49,31 +48,34 @@ class _HabitCardState extends State<HabitCard> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          margin: const EdgeInsets.all(8),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
-                      width: size.width * 0.25,
-                      height: size.height * 0.06,
+                    Expanded(
                       child: Text(
                         _name,
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                     IconButton(
                       icon: Icon(
                         _isFav ? Icons.favorite : Icons.favorite_border,
                         color: _isFav ? Colors.red : Colors.grey,
+                        size: 24,
                       ),
                       onPressed: _toggleFavorite,
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
                     ),
                   ],
                 ),
@@ -85,28 +87,26 @@ class _HabitCardState extends State<HabitCard> {
                     color: Colors.grey,
                   ),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert),
-                      onSelected: _handleMenuAction,
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: "edit",
-                          child: Text("Edit Habit"),
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert, size: 24),
+                    onSelected: _handleMenuAction,
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: "edit",
+                        child: Text("Edit Habit"),
+                      ),
+                      const PopupMenuItem(
+                        value: "delete",
+                        child: Text(
+                          "Delete Habit",
+                          style: TextStyle(color: Colors.red),
                         ),
-                        const PopupMenuItem(
-                          value: "delete",
-                          child: Text(
-                            "Delete Habit",
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -130,9 +130,11 @@ class _HabitCardState extends State<HabitCard> {
       setState(() {
         _isFav = !_isFav;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update favorite: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to update favorite: $e')),
+        );
+      }
     }
   }
 
@@ -204,7 +206,8 @@ class _HabitCardState extends State<HabitCard> {
       await Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => EditHabit(oldCategory: doc['category'],
+          builder: (context) => EditHabit(
+            oldCategory: doc['category'],
             docId: widget.habitId,
             oldName: doc['name'],
           ),

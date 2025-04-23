@@ -1,12 +1,30 @@
 import 'package:daily_nest/authentications/login.dart';
 import 'package:daily_nest/homepage.dart';
+import 'package:daily_nest/notifications/local_noti.dart';
+import 'package:daily_nest/notifications/noti_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyALurSuE5zyMmao-h9oBr_pLl0yiaKNmxk",
+            authDomain: "dailynest-fb083.firebaseapp.com",
+            projectId: "dailynest-fb083",
+            storageBucket: "dailynest-fb083.firebasestorage.app",
+            messagingSenderId: "225280984219",
+            appId: "1:225280984219:web:7d7e26cf2bed93dd41f23e",
+            measurementId: "G-CC4XGN0QLE"));
+  } else {
+    await Firebase.initializeApp();
+  }
+  await Future.wait([NotiManager.init(), LocalNotiManager.init()]);
+
   runApp(MainApp());
 }
 
