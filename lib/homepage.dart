@@ -39,7 +39,9 @@ class _HomepageState extends State<Homepage> {
         );
       }
     });
+   
   }
+
 
   @override
   void dispose() {
@@ -88,7 +90,6 @@ class _HomepageState extends State<Homepage> {
   Widget _buildHomeContent() {
     return OrientationBuilder(
       builder: (context, orientation) {
-        // Get screen dimensions
         final size = MediaQuery.of(context).size;
         final isPortrait = orientation == Orientation.portrait;
 

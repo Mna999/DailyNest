@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daily_nest/authentications/login.dart';
 import 'package:daily_nest/homepage.dart';
 import 'package:daily_nest/notifications/local_noti.dart';
@@ -25,7 +26,21 @@ void main() async {
   }
   await Future.wait([NotiManager.init(), LocalNotiManager.init()]);
 
+  _addToken();
+
   runApp(MainApp());
+}
+
+void _addToken() async {
+  var users = await FirebaseFirestore.instance
+      .collection('habits')
+      .where('uid', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+      .get();
+
+  for (var user in users.docs) {
+    FirebaseFirestore.instance.collection('habits').doc(user.id).set(
+        {'tcm_token': await NotiManager.getToken()}, SetOptions(merge: true));
+  }
 }
 
 class MainApp extends StatelessWidget {

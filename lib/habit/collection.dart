@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:daily_nest/notifications/noti_manager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
@@ -30,6 +31,7 @@ class Collections {
         "lastpressed": DateFormat('dd-MM-yyyy').format(DateTime.now()),
         "category": category,
         "uid": user.uid,
+        "tcm_token": await NotiManager.getToken()
       });
     }
   }
