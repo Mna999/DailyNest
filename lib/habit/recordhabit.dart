@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:daily_nest/Alert.dart';
 import 'package:daily_nest/habit/collection.dart';
+import 'package:daily_nest/habit/habit_calender.dart';
 import 'package:daily_nest/habit/recordcard.dart';
 import 'package:daily_nest/homepage.dart';
 import 'package:flutter/material.dart';
@@ -62,47 +63,68 @@ class Recordhabit extends StatelessWidget {
           }
 
           return Center(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: size.width * 0.9,
-                  child: Recordcard(habitData: snapshot.data!),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                SizedBox(
-                    width: size.width * 0.7,
-                    height: size.height * 0.07,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final formatter = DateFormat('dd-MM-yyyy');
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: size.width * 0.9,
+                    child: Recordcard(habitData: snapshot.data!),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: HabitCalendar(habitId: habitId),
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  SizedBox(
+                      width: size.width * 0.7,
+                      height: size.height * 0.07,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          final formatter = DateFormat('dd-MM-yyyy');
+                          final today = DateTime.now();
+                          if (snapshot.data!['lastpressed'] ==
+                              formatter.format(DateTime.now())) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: Colors.orange,
+                                content: Text(
+                                  "Habit has already been nested for the day",
+                                  style: TextStyle(color: Colors.white),
+                                )));
+                          } else {
+                            Collections.updateHabitStreak(snapshot.data!.id,
+                                snapshot.data!['streak'] + 1);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                backgroundColor: Colors.orange,
+                                content: Text(
+                                  "Habit has been nested successfully",
+                                  style: TextStyle(color: Colors.white),
+                                )));
 
-                        if (snapshot.data!['lastpressed'] ==
-                            formatter.format(DateTime.now())) {
-                          showDialog(
-                              context: context,
-                              builder: (context) => Alert(
-                                  Message:
-                                      "Habit has already been nested for the day"));
-                        } else {
-                          Collections.updateHabitStreak(
-                              snapshot.data!.id, snapshot.data!['streak'] + 1);
-                          showDialog(
-                              context: context,
-                              builder: (context) => Alert(
-                                  Message:
-                                      "Habit has been nested for the day successfully"));
-                        }
-                      },
-                      child: Text("Nest Habit"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orange,
-                        foregroundColor: Colors.white,
-                      ),
-                    )),
-              ],
+                            await FirebaseFirestore.instance
+                                .collection('habits')
+                                .doc(snapshot.data!.id)
+                                .collection('completion_dates')
+                                .add({'date': Timestamp.fromDate(today)});
+                          }
+                        },
+                        child: Text("Nest Habit"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                          foregroundColor: Colors.white,
+                        ),
+                      )),
+                ],
+              ),
             ),
           );
         },

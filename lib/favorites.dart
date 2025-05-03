@@ -66,54 +66,60 @@ class _FavoritepageState extends State<Favoritepage> {
     final userId = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
-      body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('habits')
-            .where('uid', isEqualTo: userId)
-            .where('isFav', isEqualTo: true)
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.orange),
-            );
-          }
+      body:  OrientationBuilder(
+      builder: (context, orientation) {
+        final size = MediaQuery.of(context).size;
+        final isPortrait = orientation == Orientation.portrait;
 
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('habits')
+              .where('uid', isEqualTo: FirebaseAuth.instance.currentUser?.uid).where('isFav',isEqualTo: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator(color: Colors.orange));
+            }
 
-          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(
                 child: Text(
-              "There are no favorite habits",
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
-            ));
-          }
+                  "Press the + icon to add habits",
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              );
+            }
 
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-            ),
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) => InkWell(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        Recordhabit(habitId: snapshot.data!.docs[index].id),
-                  ),
-                );
-              },
-              child: HabitCard(habitId: snapshot.data!.docs[index].id),
-            ),
-          );
-        },
-      ),
+  
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: isPortrait ? 2 : 3,
+              ),
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) => InkWell(
+                onTap: () async {
+              
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          Recordhabit(habitId: snapshot.data!.docs[index].id),
+                    ),
+                  );
+                },
+                child: HabitCard(habitId: snapshot.data!.docs[index].id),
+              ),
+            );
+          },
+        );
+      },
+    )
     );
   }
 }
